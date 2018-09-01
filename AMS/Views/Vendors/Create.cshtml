@@ -1,101 +1,116 @@
 ﻿@model AMS.Models.Vendor
 
-@{
-    ViewBag.Title = "Create";
-}
+    @{
+        ViewBag.Title = "Create";
+        Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    }
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
 
-<h2>Create</h2>
+    <script>
+        var App = angular.module("app", []);
+        App.controller("vendorCtrl", function ($scope, $http) {
 
-@using (Html.BeginForm()) 
-{
-    @Html.AntiForgeryToken()
-    
-    <div class="form-horizontal">
-        <h4>Vendor</h4>
-        <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        <div class="form-group">
-            @Html.LabelFor(model => model.Id, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Id, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Id, "", new { @class = "text-danger" })
-            </div>
-        </div>
+            $scope.list = [];
+            $scope.VendorData = [];
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.Vendor_Name, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Vendor_Name, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Vendor_Name, "", new { @class = "text-danger" })
-            </div>
-        </div>
+            $scope.VendorObj = { Vendor_Id: 0, Vendor_Name: "", Vendor_MobileNo: "", Vendor_Address: "", Vendor_Remaining: 0, Vendor_NTN: "", Vendor_Company: "", };
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.Vendor_MobileNo, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Vendor_MobileNo, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Vendor_MobileNo, "", new { @class = "text-danger" })
-            </div>
-        </div>
+            function JsonCallParam(Controller, Action, Parameters) {
+                $.ajax
+                    ({
+                        type: "POST",
+                        traditional: true,
+                        async: false,
+                        cache: false,
+                        url: '/' + Controller + '/' + Action,
+                        context: document.body,
+                        data: Parameters,
+                        success: function (json) {
+                            list = null; list = json;
+                        }, error: function (xhr) {
+                            list = null;
+                        }
+                    });
+            }
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.Vendor_Address, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Vendor_Address, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Vendor_Address, "", new { @class = "text-danger" })
-            </div>
-        </div>
+            $scope.Save = function () {
+                var pram = { "VendorObj": JSON.stringify($scope.VendorObj) };
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.Vendor_Remaining, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Vendor_Remaining, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Vendor_Remaining, "", new { @class = "text-danger" })
-            </div>
-        </div>
+                if ($scope.VendorObj.Vendor_Id == 0) {
+                    JsonCallParam("Vendors", "Insert", pram)
+                }
+                else {
+                    JsonCallParam("Vendors", "Update", pram)
+                }
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.Vendor_Status, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                <div class="checkbox">
-                    @Html.EditorFor(model => model.Vendor_Status)
-                    @Html.ValidationMessageFor(model => model.Vendor_Status, "", new { @class = "text-danger" })
+                $scope.GetVendor();
+                $scope.clear();
+
+            };
+
+            $scope.GetVendor = function () {
+                JsonCallParam("Vendors", "GetVendor");
+                $scope.VendorData = list;
+            }
+            $scope.GetVendor();
+
+            $scope.clear = function () {
+                $scope.VendorObj = { Vendor_Id: 0, Vendor_Name: "", Vendor_MobileNo: "", Vendor_Address: "", Vendor_Remaining: 0, Vendor_NTN: "", Vendor_Company: "", };
+            }
+
+            $scope.LoadData = function (venObject) {
+                JsonCallParam("Vendors", "LoadData", { "Id": venObject.Vendor_Id })
+                $scope.VendorObj = list;
+                $scope.GetVendor();
+            }
+
+            $scope.DeleteData = function (venObject) {
+                JsonCallParam("Vendors", "DeleteData", { "Id": venObject.Vendor_Id })
+                $scope.VendorObj = list;
+                $scope.GetVendor();
+
+            }
+        });
+
+    </script>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Registration</h4>
+                    <h6 class="card-subtitle">
+                        Register Here
+                    </h6>
+                    <form class="form-material m-t-40">
+
+                        <div class="form-group">
+                            <label>Name</label>
+                            <input type="text" class="form-control" placeholder="Enter Your Name">
+                        </div>
+                        <div class="form-group">
+                            <label>Mobile Number</label>
+                            <input type="text" class="form-control" placeholder="Enter Your Mobile Number">
+                        </div>
+                        <div class="form-group">
+                            <label>Address</label>
+                            <textarea class="form-control" rows="3" placeholder="Enter Your Address"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>National Tax No.</label>
+                            <input type="text" class="form-control" placeholder="Enter Your National Tax Number">
+                        </div>
+                        <div class="form-group">
+                            <label>Company Name</label>
+                            <input type="text" class="form-control" placeholder="Enter Your Company Name">
+                        </div>
+                        <div class="form-group m-b-0">
+                            <button type="submit" class="btn btn-info waves-effect waves-light m-t-10">Sign in</button>
+                        </div>
+
+                    </form>
                 </div>
             </div>
         </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Vendor_NTN, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Vendor_NTN, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Vendor_NTN, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Vendor_Company, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Vendor_Company, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Vendor_Company, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Vendor_Date, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Vendor_Date, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Vendor_Date, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Create" class="btn btn-default" />
-            </div>
-        </div>
     </div>
-}
-
-<div>
-    @Html.ActionLink("Back to List", "Index")
 </div>
