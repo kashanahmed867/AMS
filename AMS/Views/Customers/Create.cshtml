@@ -1,0 +1,107 @@
+﻿@model AMS.Models.Customer
+
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+
+<script>
+    var App = angular.module("app", []);
+    App.controller("vendorCtrl", function ($scope, $http) {
+
+        $scope.list = [];
+        $scope.VendorData = [];
+
+        $scope.VendorObj = { Vendor_Id: 0, Vendor_Name: "", Vendor_MobileNo: "", Vendor_Address: "", Vendor_Remaining: 0, Vendor_NTN: "", Vendor_Company: "", };
+
+        function JsonCallParam(Controller, Action, Parameters) {
+            $.ajax
+                ({
+                    type: "POST",
+                    traditional: true,
+                    async: false,
+                    cache: false,
+                    url: '/' + Controller + '/' + Action,
+                    context: document.body,
+                    data: Parameters,
+                    success: function (json) {
+                        list = null; list = json;
+                    } ,error: function (xhr) {
+                        list = null;
+                    }
+                });
+        }
+
+        $scope.Save = function () {
+            var pram = { "VendorObj": JSON.stringify($scope.VendorObj) };
+
+            if ($scope.VendorObj.Vendor_Id == 0) {
+                JsonCallParam("Vendors", "Insert", pram)
+            }
+            else {
+                JsonCallParam("Vendors", "Update", pram)
+            }
+
+            $scope.GetVendor();
+            $scope.clear();
+
+        };
+
+        $scope.GetVendor = function () {
+            JsonCallParam("Vendors", "GetVendor");
+            $scope.VendorData = list;
+        }
+        $scope.GetVendor();
+
+        $scope.clear = function () {
+            $scope.VendorObj = { Vendor_Id: 0, Vendor_Name: "", Vendor_MobileNo: "", Vendor_Address: "", Vendor_Remaining: 0, Vendor_NTN: "", Vendor_Company: "", };
+        }
+
+        $scope.LoadData = function (venObject) {
+            JsonCallParam("Vendors", "LoadData", { "Id" : venObject.Vendor_Id} )
+            $scope.VendorObj = list;
+            $scope.GetVendor();
+        }
+
+        $scope.DeleteData = function (venObject) {
+            JsonCallParam("Vendors", "DeleteData", { "Id" : venObject.Vendor_Id} )
+            $scope.VendorObj = list;
+            $scope.GetVendor();
+
+        }
+    });
+
+</script>
+
+
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">Basic Material inputs</h4>
+        <h6 class="card-subtitle">
+            Just add
+            <code>form-material</code> class to the form that's it.
+        </h6>
+        <form class="form-material m-t-40">      
+            <div class="form-group">
+                <label for="example-email">
+                    Email
+                    <span class="help"> e.g. "example@gmail.com"</span>
+                </label>
+                <input type="email" id="example-email2" name="example-email" class="form-control" placeholder="Email">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" class="form-control" value="password">
+            </div>
+            <div class="form-group">
+                <label>Placeholder</label>
+                <input type="text" class="form-control" placeholder="placeholder">
+            </div>
+            
+          
+         
+        </form>
+    </div>
+</div>
+
