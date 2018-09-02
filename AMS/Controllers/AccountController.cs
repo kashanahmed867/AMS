@@ -9,6 +9,10 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using AMS.Models;
+using System.Web.Script.Serialization;
+using Newtonsoft.Json;
+using System.Web.Security;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace AMS.Controllers
 {
@@ -75,7 +79,8 @@ namespace AMS.Controllers
 
             // This doesn't count login failures towards account lockout
             // To enable password failures to trigger account lockout, change to shouldLockout: true
-            var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: false);
+            //var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: false);
+            var result = await SignInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, shouldLockout: false);
             switch (result)
             {
                 case SignInStatus.Success:
@@ -151,18 +156,18 @@ namespace AMS.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                var user = new ApplicationUser { UserName = model.UserName, Email = model.Email, UserRole = model.UserRole };
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
                     await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
-                    
+
                     // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
                     // Send an email with this link
                     // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
                     // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
                     // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
-
+                    await this.UserManager.AddToRoleAsync(user.Id, model.UserRole);
                     return RedirectToAction("Index", "Home");
                 }
                 AddErrors(result);
@@ -171,6 +176,45 @@ namespace AMS.Controllers
             // If we got this far, something failed, redisplay form
             return View(model);
         }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<JsonResult> Register2(FormCollection form)
+        {
+            var js = new JavaScriptSerializer();
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    RegisterViewModel rvm = new RegisterViewModel();
+                    string customerName = js.Deserialize<Customer>(form["CustomerObj"]).Customer_Name;
+                    string roleName = js.Deserialize<string>(form["UserRole"]);
+                    Random rndm = new Random();
+                    rvm.UserName = (customerName.ToLower().Replace(" ", "")) + rndm.Next(0000, 9999);
+                    rvm.Password = "Ask" + Membership.GeneratePassword(7, 0) + "@" + rndm.Next(0, 999);
+                    rvm.UserRole = roleName;
+                    rvm.Email = (customerName.ToLower().Replace(" ", "")) + "123@gmail.com";
+
+                    var user = new ApplicationUser { UserName = rvm.UserName, Email = rvm.Email, UserRole = rvm.UserRole };
+                    var result = await UserManager.CreateAsync(user, rvm.Password);
+                    if (result.Succeeded)
+                    {
+                        await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+                        await this.UserManager.AddToRoleAsync(user.Id, roleName);
+                        Session["tempData"] = user.Id;
+                        return Json(user.Id, JsonRequestBehavior.AllowGet);
+                    }
+                    AddErrors(result);
+                }
+                catch (Exception ex)
+                {
+                }
+            }
+
+            // If we got this far, something failed, redisplay form
+            return null;
+        }
+
 
         //
         // GET: /Account/ConfirmEmail

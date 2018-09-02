@@ -13,9 +13,9 @@ namespace AMS.Models
 
         public int Notification_ItemId { get; set; }
 
-        public int Notification_ItemType { get; set; }
+        public string Notification_ItemType { get; set; }
 
-        public int Notification_Detail { get; set; }
+        public string Notification_Detail { get; set; }
 
         public DateTime Notification_Date { get; set; }
 

@@ -38,7 +38,7 @@ namespace AMS.Models
 
         public string Product_Unit { get; set; }
 
-        public int Product_UnitPrice { get; set; }
+        public decimal Product_UnitPrice { get; set; }
 
         //public string Product_Varient { get; set; }
     }

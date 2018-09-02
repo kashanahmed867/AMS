@@ -11,7 +11,7 @@ namespace AMS.Models
         [Key]
         public int ProductSize_Id { get; set; }
 
-        public int ProductSize_Value { get; set; }
+        public string ProductSize_Value { get; set; }
 
         public int ProductSize_Height { get; set; }
 

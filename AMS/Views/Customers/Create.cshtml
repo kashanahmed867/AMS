@@ -1,0 +1,241 @@
+﻿@model AMS.Models.Customer
+
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<script>
+        App.controller("CustomerCtrl", function ($scope, $http) {
+
+            $scope.list = [];
+            $scope.CustomerData = [];
+
+            $scope.AllowSubmit = false;
+            $scope.CustomerObj = { Customer_Id: 0, Customer_Name: "", Customer_MobileNo: "", Customer_Address: "", Customer_NTN: "", Customer_Company: "" };
+
+            function JsonCall(Controller, Action) {
+                $.ajax({
+                    type: "POST",
+                    traditional: true,
+                    async: false,
+                    cache: false,
+                    url: '/' + Controller + '/' + Action,
+                    context: document.body,
+                    success: function (json) {
+                        list = null; list = json;
+                    },
+                    error: function (xhr) {
+                        list = null;
+                        //debugger;
+                    }
+                });
+            }
+            function JsonCallParam(Controller, Action, Parameters) {
+                $.ajax({
+                    type: "POST",
+                    traditional: true,
+                    async: false,
+                    cache: false,
+                    url: '/' + Controller + '/' + Action,
+                    context: document.body,
+                    data: Parameters,
+                    success: function (json) {
+                        list = null; list = json;
+                    }
+               ,
+                    error: function (xhr) {
+                        //debugger;
+                        list = null;
+                    }
+                });
+            }
+            function WebApiCall(Type, Action, Parameters) {
+
+                $.ajax({
+                    type: Type,
+                    traditional: true,
+                    async: false,
+                    cache: false,
+                    url: '/api/' + Action,
+                    context: document.body,
+                    data: Parameters,
+                    ContentType: 'application/json;utf-8',
+                    success: function (json) {
+                        list = json;
+                    }
+               ,
+                    error: function (xhr) {
+                        //debugger;
+                    }
+                });
+            }
+
+            $scope.SaveCustomer = function () {
+                var pram = { "CustomerObj": JSON.stringify($scope.CustomerObj) };
+
+                if ($scope.CustomerObj.Customer_Id == 0) {
+                    JsonCallParam("Account", "Register2", { "UserRole": JSON.stringify("Customer"), "CustomerObj": JSON.stringify($scope.CustomerObj) })
+                    if (list != null)
+                        JsonCallParam("Customers", "CreateCustomer", pram)
+                }
+                else {
+                    JsonCallParam("Customers", "UpdateCustomer", pram)
+                }
+
+                $scope.GetCustomer();
+                $scope.Clear();
+            };
+
+            $scope.GetCustomer = function () {
+                JsonCall("Customers", "GetCustomer");
+                $scope.CustomerData = list;
+            }
+            $scope.GetCustomer();
+
+            $scope.Clear = function () {
+                $scope.CustomerObj = { Customer_Id: 0, Customer_Name: "", Customer_MobileNo: "", Customer_Address: "", Customer_NTN: "", Customer_Company: "" };
+            }
+
+            $scope.ValidateCustomer = function () {
+                if ($scope.CustomerObj.Customer_Name == ""
+                    || $scope.CustomerObj.Customer_MobileNo == ""
+                    || $scope.CustomerObj.Customer_Address == ""
+                    || $scope.CustomerObj.Customer_NTN == ""
+                    || $scope.CustomerObj.Customer_Company == "")
+                {
+                    $scope.AllowSubmit = false;
+                }
+                else
+                {
+                    $scope.AllowSubmit = true;
+                }
+            }
+
+            $scope.LoadCustomer = function (obj) {
+                $scope.CustomerObj = obj;
+                $scope.ValidateCustomer();
+            }
+
+            $scope.DeleteCustomer = function (obj) {
+                if (confirm('Are you sure you want to delete customer?')) {
+                    JsonCallParam("Customers", "DeleteCustomer", { "id": obj.Customer_Id })
+                    $scope.GetCustomer();
+                } else {
+                    // Do nothing!
+                }
+            }
+        });
+
+</script>
+<div ng-controller="CustomerCtrl">
+    <div class="container-fluid">
+        <div class="row page-titles">
+            <div class="col-md-5 align-self-center">
+                <h4 class="text-themecolor">Customer</h4>
+            </div>
+            <div class="col-md-7 align-self-center text-right">
+                <div class="d-flex justify-content-end align-items-center">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+                        <li class="breadcrumb-item active">Customer</li>
+                    </ol>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Registration</h4>
+                        <h6 class="card-subtitle">
+                            Register Here
+                        </h6>
+                        <form name="form" class="form-material m-t-40">
+
+                            <div class="form-group">
+                                <label>Name</label>
+                                <input type="text" class="form-control" name="Customer_Name" ng-model="CustomerObj.Customer_Name" ng-change="ValidateCustomer()" placeholder="Enter Your Name">
+                                <span style="color:red" ng-show="form.Customer_Name.$invalid &&form.Customer_Name.$dirty">
+                                    <span ng-show="form.Customer_Name.$error.required">Enter Customer Name</span>
+                                </span>
+                            </div>
+                            <div class="form-group">
+                                <label>Mobile Number</label>
+                                <input type="text" class="form-control" name="Customer_MobileNo" ng-model="CustomerObj.Customer_MobileNo" ng-change="ValidateCustomer()" placeholder="Enter Your Mobile Number">
+                                <span style="color:red" ng-show="form.Customer_MobileNo.$invalid &&form.Customer_MobileNo.$dirty">
+                                    <span ng-show="form.Customer_MobileNo.$error.required">Enter Customer Mobile Number</span>
+                                </span>
+                            </div>
+                            <div class="form-group">
+                                <label>Address</label>
+                                <textarea class="form-control" rows="3" name="Customer_Address" ng-model="CustomerObj.Customer_Address" ng-change="ValidateCustomer()" placeholder="Enter Your Address"></textarea>
+                                <span style="color:red" ng-show="form.Customer_Address.$invalid &&form.Customer_Address.$dirty">
+                                    <span ng-show="form.Customer_Address.$error.required">Enter Customer Address</span>
+                                </span>
+                            </div>
+                            <div class="form-group">
+                                <label>National Tax No.</label>
+                                <input type="text" class="form-control" name="Customer_NTN" ng-model="CustomerObj.Customer_NTN" ng-change="ValidateCustomer()" placeholder="Enter Your National Tax Number">
+                                <span style="color:red" ng-show="form.Customer_NTN.$invalid &&form.Customer_NTN.$dirty">
+                                    <span ng-show="form.Customer_NTN.$error.required">Enter Customer National Tax Number</span>
+                                </span>
+                            </div>
+                            <div class="form-group">
+                                <label>Company Name</label>
+                                <input type="text" class="form-control" name="Customer_Company" ng-model="CustomerObj.Customer_Company" ng-change="ValidateCustomer()" placeholder="Enter Your Company Name">
+                                <span style="color:red" ng-show="form.Customer_Company.$invalid &&form.Customer_Company.$dirty">
+                                    <span ng-show="form.Customer_Company.$error.required">Enter Customer Company Name</span>
+                                </span>
+                            </div>
+                            <div class="form-group m-b-0">
+                                <button type="submit" class="btn btn-info waves-effect waves-light m-t-10" ng-click="SaveCustomer()" ng-disabled="!AllowSubmit">Submit</button>
+                                <button type="submit" class="btn btn-info waves-effect waves-light m-t-10" ng-click="Clear()">Clear</button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Customers</h4>
+                        <h6 class="card-subtitle">All Customers Data</h6>
+                        <button type="submit" class="btn btn-info waves-effect waves-light m-t-10" ng-click="GetCustomer()">Refresh</button>
+                        <div class="jsgrid table-responsive m-t-40">
+                            <table id="myTable" class="jsgrid-table table table-bordered table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Mobile No.</th>
+                                        <th>Address</th>
+                                        <th>NTN</th>
+                                        <th>Company</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="jsgrid-alt-row" ng-repeat="obj in CustomerData">
+                                        <td>{{obj.Customer_Name}}</td>
+                                        <td>{{obj.Customer_MobileNo}}</td>
+                                        <td>{{obj.Customer_Address}}</td>
+                                        <td>{{obj.Customer_NTN}}</td>
+                                        <td>{{obj.Customer_Company}}</td>
+                                        <td class="jsgrid-cell jsgrid-control-field jsgrid-align-center"><button class="jsgrid-button jsgrid-edit-button" type="button" ng-click="LoadCustomer(obj)" title="Edit"></button><button class="jsgrid-button jsgrid-delete-button" type="button" ng-click="DeleteCustomer(obj)" title="Delete"></button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

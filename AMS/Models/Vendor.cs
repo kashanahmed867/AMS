@@ -11,7 +11,7 @@ namespace AMS.Models
         [Key]
         public int Vendor_Id { get; set; }
 
-        public int Id { get; set; }
+        public string Id { get; set; }
         public virtual ApplicationUser ApplicationUser { get; set; }
 
         public string Vendor_Name { get; set; }

@@ -11,8 +11,8 @@ namespace AMS.Models
         [Key]
         public int SOP_Id { get; set; }
 
-        public virtual Customer Customer { get; set; }
         public int CustomerId { get; set; }
+        public virtual Customer Customer { get; set; }
 
         public int SOP_TotalQuantity { get; set; }
 
