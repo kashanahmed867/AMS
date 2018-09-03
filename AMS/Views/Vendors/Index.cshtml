@@ -1,81 +1,81 @@
-﻿@model IEnumerable<AMS.Models.Vendor>
+﻿
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Create";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
 
-<h2>Index</h2>
+<script src="~/Angular/CustomerVendorController.js"></script>
+<div ng-controller="VendorCtrl">
+    <div class="container-fluid">
+        <div class="row page-titles">
+            <div class="col-md-5 align-self-center">
+                <h4 class="text-themecolor">Vendor</h4>
+            </div>
+            <div class="col-md-7 align-self-center text-right">
+                <div class="d-flex justify-content-end align-items-center">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+                        <li class="breadcrumb-item active">Vendor</li>
+                    </ol>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Id)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Vendor_Name)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Vendor_MobileNo)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Vendor_Address)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Vendor_Remaining)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Vendor_Status)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Vendor_NTN)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Vendor_Company)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Vendor_Date)
-        </th>
-        <th></th>
-    </tr>
+                </div>
+            </div>
+        </div>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.Id)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Vendor_Name)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Vendor_MobileNo)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Vendor_Address)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Vendor_Remaining)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Vendor_Status)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Vendor_NTN)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Vendor_Company)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Vendor_Date)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.Vendor_Id }) |
-            @Html.ActionLink("Details", "Details", new { id=item.Vendor_Id }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.Vendor_Id })
-        </td>
-    </tr>
-}
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Vendors</h4>
+                        <h6 class="card-subtitle">All Vendors Data</h6>
+                        <!-- Accordian -->
+                        <div class="accordion" id="accordionTable">
+                            <div class="card m-b-5">
+                                <div class="card-header" id="heading1">
+                                    <h5 class="mb-0">
+                                        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#col1" aria-expanded="true" aria-controls="col1">
+                                            Collapse Vendor Data
+                                        </button>
+                                    </h5>
+                                </div>
+                                <div id="col1" class="collapse show" aria-labelledby="heading1" data-parent="#accordionTable">
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table id="demo-foo-accordion" class="table table-bordered m-b-0 toggle-arrow-tiny" data-filtering="true" data-paging="true" data-sorting="true">
+                                                <thead>
+                                                    <tr class="footable-filtering">
+                                                        <th> Vendor Name </th>
+                                                        <th> Mobile No. </th>
+                                                        <th> Address </th>
+                                                        <th> NTN No. </th>
+                                                        <th> Company </th>
+                                                        <th> Remaining </th>
+                                                        <th> Status </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr ng-repeat="obj in VendorData">
+                                                        <td>{{obj.Vendor_Name}}</td>
+                                                        <td>{{obj.Vendor_MobileNo}}</td>
+                                                        <td>{{obj.Vendor_Address}}</td>
+                                                        <td>{{obj.Vendor_NTN}}</td>
+                                                        <td>{{obj.Vendor_Company}}</td>
+                                                        <td>{{obj.Vendor_Remaining}}</td>
+                                                        <td><span class="label label-table label-success" ng-show="obj.Vendor_Status">Active</span><span class="label label-table label-inverse" ng-show="!obj.Vendor_Status">Disabled</span></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-</table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

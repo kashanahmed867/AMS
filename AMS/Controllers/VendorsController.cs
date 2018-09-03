@@ -125,53 +125,47 @@ namespace AMS.Controllers
             base.Dispose(disposing);
         }
 
-        public void Insert(FormCollection form)
+        public void CreateVendor(FormCollection form)
         {
-            Vendor ven = JsonConvert.DeserializeObject<Vendor>(form["VendorObj"]);
-            db.Vendors.Add(ven);
+            Vendor vendor = JsonConvert.DeserializeObject<Vendor>(form["VendorObj"]);
+            string userId = "";
+            userId = Session["tempData"].ToString();
+            vendor.Id = userId;
+            vendor.ApplicationUser = db.Users.Where(m => m.Id == userId).SingleOrDefault();
+            vendor.Vendor_Remaining = 0;
+            vendor.Vendor_Date = DateTime.Now;
+            vendor.Vendor_Status = true;
+            db.Vendors.Add(vendor);
             db.SaveChanges();
+
+            Session["tempData"] = null;
         }
 
-        public void Update(FormCollection form)
+        public void UpdateVendor(FormCollection form)
         {
-            Vendor ven = JsonConvert.DeserializeObject<Vendor>(form["VendorObj"]);
-           
-
-            int id = ven.Vendor_Id;
-            var ven_db = db.Vendors.Find(id);
-            ven_db.Vendor_Name = ven.Vendor_Name;
-            ven_db.Vendor_MobileNo = ven.Vendor_MobileNo;
-            ven_db.Vendor_Address = ven.Vendor_Address;
-            ven_db.Vendor_Remaining = ven.Vendor_Remaining;
-            //ven_db.Vendor_Status = ven.Vendor_Status;
-            ven_db.Vendor_NTN = ven.Vendor_NTN;
-            ven_db.Vendor_Company = ven.Vendor_Company;
-            ven_db.Vendor_Date = ven.Vendor_Date;
-
-            db.Entry(ven_db).State = EntityState.Modified;
+            Vendor vendor = JsonConvert.DeserializeObject<Vendor>(form["VendorObj"]);
+            int id = vendor.Vendor_Id;
+            var vendor_db = db.Vendors.Find(id);
+            vendor_db.Vendor_Name = vendor.Vendor_Name;
+            vendor_db.Vendor_MobileNo = vendor.Vendor_MobileNo;
+            vendor_db.Vendor_Address = vendor.Vendor_Address;
+            vendor_db.Vendor_NTN = vendor.Vendor_NTN;
+            vendor_db.Vendor_Company = vendor.Vendor_Company;
+            db.Entry(vendor_db).State = EntityState.Modified;
             db.SaveChanges();
         }
 
         public JsonResult GetVendor()
         {
-            var ven = db.Vendors.ToList();
-            return Json(ven, JsonRequestBehavior.AllowGet);
-
+            var vendors_list = db.Vendors.ToList();
+            return Json(vendors_list, JsonRequestBehavior.AllowGet);
         }
 
-        public JsonResult LoadData(int id)
+        public void DeleteVendor(int id)
         {
-            var ven = db.Vendors.Find(id);
-            return Json(ven, JsonRequestBehavior.AllowGet);
-        }
-
-        public void DeleteData(int id)
-        {
-            var ven = db.Vendors.Find(id);
-            db.Vendors.Remove(ven);
+            var vendor = db.Vendors.Find(id);
+            db.Vendors.Remove(vendor);
             db.SaveChanges();
-
         }
-
     }
 }

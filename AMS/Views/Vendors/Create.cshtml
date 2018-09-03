@@ -1,114 +1,118 @@
 ﻿@model AMS.Models.Vendor
 
-    @{
-        ViewBag.Title = "Create";
-        Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
-    }
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
 
-    <script>
-        App.controller("VendorCtrl", function ($scope, $http) {
+<script src="~/Angular/CustomerVendorController.js"></script>
+<div ng-controller="VendorCtrl">
+    <div class="container-fluid">
+        <div class="row page-titles">
+            <div class="col-md-5 align-self-center">
+                <h4 class="text-themecolor">Vendor</h4>
+            </div>
+            <div class="col-md-7 align-self-center text-right">
+                <div class="d-flex justify-content-end align-items-center">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+                        <li class="breadcrumb-item active">Vendor</li>
+                    </ol>
 
-            $scope.list = [];
-            $scope.VendorData = [];
-
-            $scope.VendorObj = { Vendor_Id: 0, Vendor_Name: "", Vendor_MobileNo: "", Vendor_Address: "", Vendor_Remaining: 0, Vendor_NTN: "", Vendor_Company: "", };
-
-            function JsonCallParam(Controller, Action, Parameters) {
-                $.ajax
-                    ({
-                        type: "POST",
-                        traditional: true,
-                        async: false,
-                        cache: false,
-                        url: '/' + Controller + '/' + Action,
-                        context: document.body,
-                        data: Parameters,
-                        success: function (json) {
-                            list = null; list = json;
-                        }, error: function (xhr) {
-                            list = null;
-                        }
-                    });
-            }
-
-            $scope.Save = function () {
-                var pram = { "VendorObj": JSON.stringify($scope.VendorObj) };
-
-                if ($scope.VendorObj.Vendor_Id == 0) {
-                    JsonCallParam("Vendors", "Insert", pram)
-                }
-                else {
-                    JsonCallParam("Vendors", "Update", pram)
-                }
-
-                $scope.GetVendor();
-                $scope.clear();
-
-            };
-
-            $scope.GetVendor = function () {
-                JsonCallParam("Vendors", "GetVendor");
-                $scope.VendorData = list;
-            }
-            $scope.GetVendor();
-
-            $scope.clear = function () {
-                $scope.VendorObj = { Vendor_Id: 0, Vendor_Name: "", Vendor_MobileNo: "", Vendor_Address: "", Vendor_Remaining: 0, Vendor_NTN: "", Vendor_Company: "", };
-            }
-
-            $scope.LoadData = function (venObject) {
-                JsonCallParam("Vendors", "LoadData", { "Id": venObject.Vendor_Id })
-                $scope.VendorObj = list;
-                $scope.GetVendor();
-            }
-
-            $scope.DeleteData = function (venObject) {
-                JsonCallParam("Vendors", "DeleteData", { "Id": venObject.Vendor_Id })
-                $scope.VendorObj = list;
-                $scope.GetVendor();
-
-            }
-        });
-
-    </script>
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body">
-                    <h4 class="card-title">Registration</h4>
-                    <h6 class="card-subtitle">
-                        Register Here
-                    </h6>
-                    <form class="form-material m-t-40">
-
-                        <div class="form-group">
-                            <label>Name</label>
-                            <input type="text" class="form-control" placeholder="Enter Your Name">
-                        </div>
-                        <div class="form-group">
-                            <label>Mobile Number</label>
-                            <input type="text" class="form-control" placeholder="Enter Your Mobile Number">
-                        </div>
-                        <div class="form-group">
-                            <label>Address</label>
-                            <textarea class="form-control" rows="3" placeholder="Enter Your Address"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label>National Tax No.</label>
-                            <input type="text" class="form-control" placeholder="Enter Your National Tax Number">
-                        </div>
-                        <div class="form-group">
-                            <label>Company Name</label>
-                            <input type="text" class="form-control" placeholder="Enter Your Company Name">
-                        </div>
-                        <div class="form-group m-b-0">
-                            <button type="submit" class="btn btn-info waves-effect waves-light m-t-10">Sign in</button>
-                        </div>
-
-                    </form>
                 </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Registration</h4>
+                        <h6 class="card-subtitle">
+                            Register Here
+                        </h6>
+                        <form name="form" class="form-material m-t-40">
+
+                            <div class="form-group">
+                                <label>Name</label>
+                                <input type="text" class="form-control" name="Vendor_Name" ng-model="VendorObj.Vendor_Name" ng-change="ValidateVendor()" placeholder="Enter Your Name">
+                                <span style="color:red" ng-show="form.Vendor_Name.$invalid &&form.Vendor_Name.$dirty">
+                                    <span ng-show="form.Vendor_Name.$error.required">Enter Vendor Name</span>
+                                </span>
+                            </div>
+                            <div class="form-group">
+                                <label>Mobile Number</label>
+                                <input type="text" class="form-control" name="Vendor_MobileNo" ng-model="VendorObj.Vendor_MobileNo" ng-change="ValidateVendor()" placeholder="Enter Your Mobile Number">
+                                <span style="color:red" ng-show="form.Vendor_MobileNo.$invalid &&form.Vendor_MobileNo.$dirty">
+                                    <span ng-show="form.Vendor_MobileNo.$error.required">Enter Vendor Mobile Number</span>
+                                </span>
+                            </div>
+                            <div class="form-group">
+                                <label>Address</label>
+                                <textarea class="form-control" rows="3" name="Vendor_Address" ng-model="VendorObj.Vendor_Address" ng-change="ValidateVendor()" placeholder="Enter Your Address"></textarea>
+                                <span style="color:red" ng-show="form.Vendor_Address.$invalid &&form.Vendor_Address.$dirty">
+                                    <span ng-show="form.Vendor_Address.$error.required">Enter Vendor Address</span>
+                                </span>
+                            </div>
+                            <div class="form-group">
+                                <label>National Tax No.</label>
+                                <input type="text" class="form-control" name="Vendor_NTN" ng-model="VendorObj.Vendor_NTN" ng-change="ValidateVendor()" placeholder="Enter Your National Tax Number">
+                                <span style="color:red" ng-show="form.Vendor_NTN.$invalid &&form.Vendor_NTN.$dirty">
+                                    <span ng-show="form.Vendor_NTN.$error.required">Enter Vendor National Tax Number</span>
+                                </span>
+                            </div>
+                            <div class="form-group">
+                                <label>Company Name</label>
+                                <input type="text" class="form-control" name="Vendor_Company" ng-model="VendorObj.Vendor_Company" ng-change="ValidateVendor()" placeholder="Enter Your Company Name">
+                                <span style="color:red" ng-show="form.Vendor_Company.$invalid &&form.Vendor_Company.$dirty">
+                                    <span ng-show="form.Vendor_Company.$error.required">Enter Vendor Company Name</span>
+                                </span>
+                            </div>
+                            <div class="form-group m-b-0">
+                                <button type="submit" class="btn btn-info waves-effect waves-light m-t-10" ng-click="SaveVendor()" ng-disabled="!AllowSubmit">Submit</button>
+                                <button type="submit" class="btn btn-info waves-effect waves-light m-t-10" ng-click="Clear()">Clear</button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Vendors</h4>
+                        <h6 class="card-subtitle">All Vendors Data</h6>
+                        <button type="submit" class="btn btn-info waves-effect waves-light m-t-10" ng-click="GetVendor()">Refresh</button>
+                        <div class="jsgrid table-responsive m-t-40">
+                            <table id="myTable" class="jsgrid-table table table-bordered table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Mobile No.</th>
+                                        <th>Address</th>
+                                        <th>NTN</th>
+                                        <th>Company</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="jsgrid-alt-row" ng-repeat="obj in VendorData">
+                                        <td>{{obj.Vendor_Name}}</td>
+                                        <td>{{obj.Vendor_MobileNo}}</td>
+                                        <td>{{obj.Vendor_Address}}</td>
+                                        <td>{{obj.Vendor_NTN}}</td>
+                                        <td>{{obj.Vendor_Company}}</td>
+                                        <td class="jsgrid-cell jsgrid-control-field jsgrid-align-center"><button class="jsgrid-button jsgrid-edit-button" type="button" ng-click="LoadVendor(obj)" title="Edit"></button><button class="jsgrid-button jsgrid-delete-button" type="button" ng-click="DeleteVendor(obj)" title="Delete"></button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>

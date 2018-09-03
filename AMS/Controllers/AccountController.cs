@@ -187,13 +187,13 @@ namespace AMS.Controllers
                 try
                 {
                     RegisterViewModel rvm = new RegisterViewModel();
-                    string customerName = js.Deserialize<Customer>(form["CustomerObj"]).Customer_Name;
+                    var username = js.Deserialize<string>(form["Username"]);
                     string roleName = js.Deserialize<string>(form["UserRole"]);
                     Random rndm = new Random();
-                    rvm.UserName = (customerName.ToLower().Replace(" ", "")) + rndm.Next(0000, 9999);
+                    rvm.UserName = (username.ToLower().Replace(" ", "")) + rndm.Next(0000, 9999);
                     rvm.Password = "Ask" + Membership.GeneratePassword(7, 0) + "@" + rndm.Next(0, 999);
                     rvm.UserRole = roleName;
-                    rvm.Email = (customerName.ToLower().Replace(" ", "")) + "123@gmail.com";
+                    rvm.Email = (username.ToLower().Replace(" ", "")) + "123@gmail.com";
 
                     var user = new ApplicationUser { UserName = rvm.UserName, Email = rvm.Email, UserRole = rvm.UserRole };
                     var result = await UserManager.CreateAsync(user, rvm.Password);
